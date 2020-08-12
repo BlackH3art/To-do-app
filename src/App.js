@@ -1,26 +1,28 @@
 import React, { Component } from 'react';
+import TodoBanner from './components/TodoBanner';
+import TodoCreator from './components/TodoCreator';
+import TodoRow from './components/TodoRow';
 
 class App extends Component {
   state = { 
-    userName: "Jaras",
+    userName: "BlackH3art",
     todoItems: [
       {action:"kupić bułki", done: false},
       {action:"zjeść masło", done: false},
       {action:"upolować kojota", done: true},
       {action:"umyć naczynia", done: false}
     ],
-    newItemText: ""
+    // newItemText: ""
    }
 
   updateNewTextValue = (event) => {
     this.setState({newItemText: event.target.value});
   }
 
-  createNewTodo = () => {
-    if (!this.state.todoItems.find(item => item.action === this.state.newItemText)) {
+  createNewTodo = (task) => {
+    if (!this.state.todoItems.find(item => item.action === task)) {
       this.setState({
-        todoItems: [...this.state.todoItems, {action: this.state.newItemText, done: false}],
-        newItemText: ""
+        todoItems: [...this.state.todoItems, {action: task, done: false}],
       });
     }
   }
@@ -30,27 +32,16 @@ class App extends Component {
   });
 
   todoTableRows = () => this.state.todoItems.map(item => 
-    <tr key={item.action}>
-      <td>{item.action}</td>
-      <td>
-        <input type="checkbox" checked={item.done} onChange={() => this.toggleTodo(item)}/>
-      </td>
-    </tr>
+    <TodoRow key={item.action} item={item} callback={this.toggleTodo} />
   )
 
   render() { 
     return ( 
       <>
         <div>
-          <h4 className="bg-primary text-white text-center p-2">
-            Lista zadań użytkownika: {this.state.userName}
-            (Liczba zadań: {this.state.todoItems.filter(task => !task.done).length})
-          </h4>
+          <TodoBanner name={this.state.userName} tasks={this.state.todoItems} />
           <div className="container-fluid">
-            <div className="my-1">
-              <input className="form-control" value={this.state.newItemText} onChange={this.updateNewTextValue}/>
-              <button className="btn btn-primary mt-1" onClick={this.createNewTodo}> Dodaj</button>
-            </div>
+            <TodoCreator callback={this.createNewTodo} />
             <table className="table table-striped table-bordered">
               <thead>
                 <tr><th>Opis</th><th>Wykonane</th></tr>
